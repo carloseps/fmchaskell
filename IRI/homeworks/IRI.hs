@@ -4,7 +4,7 @@
 
 module IRI where
   
-import Prelude hiding (last, init, dropWhile, takeWhile, gcd, (/), (-), max, min, (^), pred, (*), (+))
+import Prelude hiding (drop, take, last, init, dropWhile, takeWhile, gcd, (/), (-), max, min, (^), pred, (*), (+), elem)
 
 data Nat where
     O :: Nat
@@ -88,6 +88,11 @@ gcd n m = gcd m (n % m)
 lcm :: Nat -> Nat -> Nat
 lcm n m = (n * m) / gcd n m
 
+-- combinacao
+comb :: Nat -> Nat -> Nat
+comb _ O = O
+comb (S n) (S m) = (fact n)/(fact m) * fact (n - m)
+
 isEven :: Nat -> Bool
 isEven O = True
 isEven (S n) = isOdd n
@@ -103,7 +108,7 @@ data List a where
     Cons :: a -> List a -> List a
   deriving (Eq, Show) 
 
--- Functions of 2° Exam IRI
+-- some functions of 2° Exam IRI are down below
 
 atEvens :: [a] -> [a]
 atEvens [] = []
@@ -112,12 +117,52 @@ atEvens (x : xs) = x : atOdds xs
 
 atOdds :: [a] -> [a]
 atOdds [] = []
-atOdds [x] = [x]
+atOdds [_] = []
 atOdds (x : xs) = atEvens xs
+
+tidy :: [Nat] -> Bool
+tidy [] = True
+tidy [x] = isEven x
+tidy (x1 : x2 : xs) = isEven x1 && isOdd x2 && tidy xs
+
+removeAt :: Nat -> [Nat] -> [Nat]
+removeAt _ [] = []
+removeAt O (x : xs) = xs
+removeAt (S n) (x : xs) = x : removeAt n xs
+
+replaceAt :: Nat -> Nat -> [Nat] -> [Nat]
+replaceAt w _ [] = []
+replaceAt w O (x : xs) = (w : xs)
+replaceAt w (S n) (x : xs) = x : replaceAt w n xs
+
+addAt :: Nat -> Nat -> [Nat] -> [Nat]
+addAt w _ [] = []
+addAt w O (x : xs) = (x + w) : xs
+addAt w (S n) (x : xs) = x : addAt w n xs
+
+pwAdd :: [Nat] -> [Nat] -> [Nat]
+pwAdd [] _ = []
+pwAdd _ [] = []
+pwAdd (x : xs) (y : ys) = x + y : pwAdd xs ys
+
+pwMull :: [Nat] -> [Nat] -> [Nat]
+pwMull [] _ = []
+pwMull _ [] = []
+pwMull (x : xs) (y : ys) = x * y : pwMull xs ys
 
 takeEvens :: [Nat] -> [Nat]
 takeEvens [] = []
 takeEvens (x : xs) = if isEven x then x:(takeEvens xs) else takeEvens xs
+
+take :: Nat -> [Nat] -> [Nat]
+take _ [] = []
+take O _ = []
+take (S n) (x : xs) = x : (take n xs)
+
+drop :: Nat -> [Nat] -> [Nat]
+drop _ [] = []
+drop O xs = xs
+drop (S n) (x : xs) = drop n xs 
 
 head ::  List Nat -> Nat
 head (Cons x _) = x
@@ -149,5 +194,11 @@ dropWhile predicate (Cons x xs) =
     if predicate x
         then dropWhile predicate xs
         else (Cons x xs)
+
+elem :: Nat -> [Nat] -> Bool
+elem _ [] = False
+elem n (x : xs)
+    | n == x = True
+    | otherwise = elem n xs
 
 --pick :: Nat -> List a -> Maybe a
