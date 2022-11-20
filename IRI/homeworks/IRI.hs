@@ -1,10 +1,13 @@
 {-# LANGUAGE GADTs, EmptyDataDecls #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant bracket" #-}
+{-# HLINT ignore "Use foldr" #-}
+{-# HLINT ignore "Use null" #-}
+{-# HLINT ignore "Redundant if" #-}
 
 module IRI where
   
-import Prelude hiding (drop, take, last, init, dropWhile, takeWhile, gcd, (/), (-), max, min, (^), pred, (*), (+), elem)
+import Prelude hiding (all, reverse, drop, take, last, init, dropWhile, takeWhile, gcd, (/), (-), max, min, (^), pred, (*), (+), elem)
 
 data Nat where
     O :: Nat
@@ -101,6 +104,11 @@ isOdd :: Nat -> Bool
 isOdd O = False
 isOdd (S n) = isEven n
 
+isZero :: Nat -> Bool
+isZero n
+    | n == O = True
+    | otherwise = False
+
 -- List funs --
 
 data List a where
@@ -109,6 +117,17 @@ data List a where
   deriving (Eq, Show) 
 
 -- some functions of 2° Exam IRI are down below
+
+append :: a -> [a] -> [a]
+append w [] = [w]
+append w (x : xs) = (x : append w xs)
+
+-- loading...
+
+-- insert :: Nat -> [Nat] -> [Nat]
+-- insert _ [] = []
+-- insert n (x : xs)
+--     | S m == S O = 
 
 atEvens :: [a] -> [a]
 atEvens [] = []
@@ -120,10 +139,61 @@ atOdds [] = []
 atOdds [_] = []
 atOdds (x : xs) = atEvens xs
 
+anyEven :: [Nat] -> Bool
+anyEven [] = True
+anyEven (x : xs) = isEven x || anyEven xs
+
+anyOdd :: [Nat] -> Bool
+anyOdd [] = True
+anyOdd (x : xs) = isOdd x || anyOdd xs
+
+anyZero :: [Nat] -> Bool
+anyZero [] = True
+anyZero (x : xs) = isZero x || anyZero xs
+
+any :: (Nat -> Bool) -> [Nat] -> Bool
+any f [] = True
+any f (x : xs) = f x || all f xs
+
+--extintas pelo all!
+
+-- allEven :: [Nat] -> Bool
+-- allEven [] = True
+-- allEven (x : xs) = isEven x && allEven xs
+
+-- allOdd :: [Nat] -> Bool
+-- allOdd [] = True
+-- allOdd (x : xs) = isOdd x && allOdd xs
+
+-- allZero :: [Nat] -> Bool
+-- allZero [] = True
+-- allZero (x : xs) = isZero x && allZero xs
+
+all :: (Nat -> Bool) -> [Nat] -> Bool
+all f [] = True
+all f (x : xs) = f x && all f xs
+
 tidy :: [Nat] -> Bool
 tidy [] = True
 tidy [x] = isEven x
 tidy (x1 : x2 : xs) = isEven x1 && isOdd x2 && tidy xs
+
+isSorted :: [Nat] -> Bool
+isSorted [] = True --brigas sobre isso por favor
+isSorted [x] = True --brigas sobre isso tbm por favor
+isSorted (x : y : ys) = 
+    if x <= y && isSorted (y : ys)
+        then True
+        else False
+
+intersperse :: a -> [a] -> [a]
+intersperse i [] = []
+intersperse i [x] = [x]
+intersperse i (x : xs) = x : i : intersperse i xs
+
+reverse :: [a] -> [a]
+reverse [] = []
+reverse (x : xs) = append x (reverse xs)
 
 removeAt :: Nat -> [Nat] -> [Nat]
 removeAt _ [] = []
@@ -140,15 +210,30 @@ addAt w _ [] = []
 addAt w O (x : xs) = (x + w) : xs
 addAt w (S n) (x : xs) = x : addAt w n xs
 
-pwAdd :: [Nat] -> [Nat] -> [Nat]
-pwAdd [] _ = []
-pwAdd _ [] = []
-pwAdd (x : xs) (y : ys) = x + y : pwAdd xs ys
+-- extintas pelo pw!
 
-pwMull :: [Nat] -> [Nat] -> [Nat]
-pwMull [] _ = []
-pwMull _ [] = []
-pwMull (x : xs) (y : ys) = x * y : pwMull xs ys
+-- pwAdd :: [Nat] -> [Nat] -> [Nat]
+-- pwAdd [] _ = []
+-- pwAdd _ [] = []
+-- pwAdd (x : xs) (y : ys) = ((x + y) : pwAdd xs ys)
+
+-- pwMul :: [Nat] -> [Nat] -> [Nat]
+-- pwMul [] _ = []
+-- pwMul _ [] = []
+-- pwMul (x : xs) (y : ys) = ((x * y) : pwMul xs ys)
+
+pw :: (a -> b -> c) -> [a] -> [b] -> [c]
+pw f [] _ = []
+pw f _ [] = []
+pw f (x : xs) (y : ys) = (f x y : pw f xs ys)
+
+maxElem :: [Nat] -> Nat
+maxElem [x] = x
+maxElem (x : xs) = max x (maxElem xs)
+
+minElem :: [Nat] -> Nat
+minElem [x] = x
+minElem (x : xs) = min x (minElem xs)
 
 takeEvens :: [Nat] -> [Nat]
 takeEvens [] = []
@@ -202,3 +287,4 @@ elem n (x : xs)
     | otherwise = elem n xs
 
 --pick :: Nat -> List a -> Maybe a
+
