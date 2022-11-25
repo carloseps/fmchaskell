@@ -7,7 +7,7 @@
 
 module IRI where
   
-import Prelude hiding (all, reverse, drop, take, last, init, dropWhile, takeWhile, gcd, (/), (-), max, min, (^), pred, (*), (+), elem)
+import Prelude hiding (product, (++), sum, any, foldl, foldr, all, reverse, drop, take, last, init, dropWhile, takeWhile, gcd, (/), (-), max, min, (^), pred, (*), (+), elem)
 
 data Nat where
     O :: Nat
@@ -42,7 +42,6 @@ n - (S m) = pred(n - m)
 
 (^) :: Nat -> Nat -> Nat
 n ^ O = S O
-n ^ S O = n
 n ^ S m = n * (n ^ m)
 
 fib :: Nat -> Nat
@@ -122,6 +121,18 @@ append :: a -> [a] -> [a]
 append w [] = [w]
 append w (x : xs) = (x : append w xs)
 
+sum :: [Nat] -> Nat
+sum [] = O
+sum (x : xs) = x + sum xs
+
+product :: [Nat] -> Nat
+product [] = S O
+product (x : xs) = x * (product xs)
+
+(++) :: [Nat] -> [Nat] -> [Nat]
+[] ++ xs = xs
+(x:xs) ++ ys = x : (xs ++ ys)
+
 -- loading...
 
 -- insert :: Nat -> [Nat] -> [Nat]
@@ -139,21 +150,23 @@ atOdds [] = []
 atOdds [_] = []
 atOdds (x : xs) = atEvens xs
 
-anyEven :: [Nat] -> Bool
-anyEven [] = True
-anyEven (x : xs) = isEven x || anyEven xs
+--extintas pelo any!
 
-anyOdd :: [Nat] -> Bool
-anyOdd [] = True
-anyOdd (x : xs) = isOdd x || anyOdd xs
+-- anyEven :: [Nat] -> Bool
+-- anyEven [] = False
+-- anyEven (x : xs) = isEven x || anyEven xs
 
-anyZero :: [Nat] -> Bool
-anyZero [] = True
-anyZero (x : xs) = isZero x || anyZero xs
+-- anyOdd :: [Nat] -> Bool
+-- anyOdd [] = False
+-- anyOdd (x : xs) = isOdd x || anyOdd xs
+
+-- anyZero :: [Nat] -> Bool
+-- anyZero [] = False
+-- anyZero (x : xs) = isZero x || anyZero xs
 
 any :: (Nat -> Bool) -> [Nat] -> Bool
-any f [] = True
-any f (x : xs) = f x || all f xs
+any p [] = False
+any p (x : xs) = p x || any p xs
 
 --extintas pelo all!
 
@@ -170,8 +183,8 @@ any f (x : xs) = f x || all f xs
 -- allZero (x : xs) = isZero x && allZero xs
 
 all :: (Nat -> Bool) -> [Nat] -> Bool
-all f [] = True
-all f (x : xs) = f x && all f xs
+all p [] = True
+all p (x : xs) = p x && all p xs
 
 tidy :: [Nat] -> Bool
 tidy [] = True
@@ -286,5 +299,20 @@ elem n (x : xs)
     | n == x = True
     | otherwise = elem n xs
 
+foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr f w [] = w
+foldr f w (x : xs) = f x (foldr f w xs)
+
+foldl :: (b -> a -> b) -> b -> [a] -> b
+foldl f w [] = w
+foldl f w (x : xs) = foldl f (f w x) xs
+
+-- foldr (+) 5 [10,20,30] = (10 + (20 +(30 + 5))) = 65
+-- foldl (-) 10 [20,30,40] = (((10 - 20)+ 30)+ 40) = 60
+-- foldr (*) 7 [2,3] = (2 *(3 * 7)) = 42
+-- foldr (^) 2 [3,2] = (3 ^(2 ^ 2)) = 81
+-- foldl (^) 2 [3,2] = ((2 ^ 3) ^ 2) = 64
+
 --pick :: Nat -> List a -> Maybe a
+
 
