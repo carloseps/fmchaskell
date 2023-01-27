@@ -4,10 +4,11 @@
 {-# HLINT ignore "Use foldr" #-}
 {-# HLINT ignore "Use null" #-}
 {-# HLINT ignore "Redundant if" #-}
+{-# HLINT ignore "Use map" #-}
 
 module IRI where
   
-import Prelude hiding (product, (++), sum, any, foldl, foldr, all, reverse, drop, take, last, init, dropWhile, takeWhile, gcd, (/), (-), max, min, (^), pred, (*), (+), elem)
+import Prelude hiding (map, filter, product, (++), sum, any, foldl, foldr, all, reverse, drop, take, last, init, dropWhile, takeWhile, gcd, (/), (-), max, min, (^), pred, (*), (+), elem)
 
 data Nat where
     O :: Nat
@@ -18,6 +19,10 @@ data Unit where
     Star :: Unit
 
 data Empty
+
+data Maybe : (a : Type) -> Type
+    Nothing : Maybe a
+    Just : a -> Maybe a
 
 instance Ord Nat where
     (<=) O _ = True
@@ -315,4 +320,19 @@ foldl f w (x : xs) = foldl f (f w x) xs
 
 --pick :: Nat -> List a -> Maybe a
 
+filter :: (a -> Bool) -> [a] -> [a]
+filter p [] = []
+filter p (x : xs) =
+    if p x
+        then x : filter p xs
+        else filter p xs
 
+map :: (a -> b) -> [a] -> [b]
+map f [] = []
+map f (x : xs) = f x : map f xs
+
+ifThenElse :: Bool -> a -> a -> a
+ifThenElse True  x y = x
+ifThenElse False x y = y
+
+(·) :: Real -> Seq(Real) -> Seq(Real)
